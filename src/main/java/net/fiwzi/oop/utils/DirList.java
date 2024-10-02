@@ -27,10 +27,10 @@ public class DirList {
         String basePath = Constant.BASE_PATH;
         int i = 0;
         for (Resource resource : resources) {
-            if(i >= start + 100)
-                break;
             Path path = Paths.get(resource.getURI());
             if (Files.isDirectory(path)) {
+                if(i >= start + 100)
+                    break;
                 String relativePath = path.toString().substring(basePath.length());
                 if(relativePath.split("/").length >= 3)
                     i++;
@@ -96,7 +96,7 @@ public class DirList {
     }
     public DynamicObjectInterface DirGet(String basePattern,int start) throws IOException {
         if(start != 0)
-            start += 100;
+            start = 100 * start;
         DynamicObjectInterface dynamicFileCount = new DynamicObjectInterface();
         CountFindFileInterface pathAll = this.listDirectories(basePattern,start);
         DynamicObject root = new DynamicObject();
