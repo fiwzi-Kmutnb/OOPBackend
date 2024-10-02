@@ -42,7 +42,7 @@ public class ImageDelivery {
     @GetMapping("/file/list")
     public ResponseEntity<?> getImageListDelivery(@RequestParam(defaultValue = "/train_images/10728036/142859125",required = false,name = "path") String path) {
         try {
-            return ResponseEntity.ok().body(imageUsecase.getImageListUsecase(SecurityEscape.Security(path)));
+            return ResponseEntity.ok().body(imageUsecase.getImageListUsecase(SecurityEscape.SecurityFile(path)));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
