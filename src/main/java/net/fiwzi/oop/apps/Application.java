@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableCaching
 @ComponentScan(basePackages = {
-		"net.fiwzi.oop.internal.context"
+		"net.fiwzi.oop"
 })
 public class Application  {
 	public static void main(String[] args) {
