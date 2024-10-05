@@ -13,18 +13,18 @@ public class ResponseInterface {
 
     public static class Data {
         @JsonProperty("file")
-        private DirList.DynamicObject file;
+        private Directory file;
 
         @JsonProperty("fileCount")
         private int fileCount;
         @JsonProperty("findFileCount")
         private int findFileCount;
 
-        public DirList.DynamicObject getFile() {
+        public Directory getFile() {
             return file;
         }
 
-        public void setFile(DirList.DynamicObject file) {
+        public void setFile(Directory file) {
             this.file = file;
         }
 

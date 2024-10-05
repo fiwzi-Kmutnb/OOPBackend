@@ -5,14 +5,14 @@ import net.fiwzi.oop.utils.DirList;
 import java.util.List;
 
 public class DynamicObjectInterface {
-    private DirList.DynamicObject file;
+    private Directory file;
     private int countFind;
 
-    public DirList.DynamicObject getFile() {
+    public Directory getFile() {
         return file;
     }
 
-    public void setFile(DirList.DynamicObject a) {
+    public void setFile(Directory a) {
         this.file = a;
     }
 

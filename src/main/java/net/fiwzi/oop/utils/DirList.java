@@ -2,6 +2,7 @@ package net.fiwzi.oop.utils;
 
 import net.fiwzi.oop.infrastructure.Constant;
 import net.fiwzi.oop.internal.context.interfaces.CountFindFileInterface;
+import net.fiwzi.oop.internal.context.interfaces.Directory;
 import net.fiwzi.oop.internal.context.interfaces.DynamicObjectInterface;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -12,13 +13,34 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DirList {
-    public static class DynamicObject extends HashMap<String, Object> {}
+    public static class DynamicObjectDir extends HashMap<String, Object> {}
+    private Directory root = new Directory("root");
+    public static int countDirectories(String directoryPath) {
+        File directory = new File(directoryPath);
+        if (!directory.isDirectory()) {
+            return 0;
+        }
+        return countDirectoriesRecursively(directory);
+    }
+
+    private static int countDirectoriesRecursively(File directory) {
+        int count = 0;
+        if (directory.getPath().split("/").length > 6) {
+            count = 1;
+        }
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    count += countDirectoriesRecursively(file);
+                }
+            }
+        }
+        return count;
+    }
     private CountFindFileInterface listDirectories(String basePattern,int start) throws IOException {
         CountFindFileInterface file = new CountFindFileInterface();
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
@@ -34,77 +56,43 @@ public class DirList {
                 String relativePath = path.toString().substring(basePath.length());
                 if(relativePath.split("/").length >= 3)
                     i++;
-                if(i < start)
+                if(i <= start)
                     continue;
                 directories.add(relativePath);
             }
         }
         file.setFile(directories);
-        if(start != 0)
-            start--;
         file.setCountFind(Math.max(i - start, 0));
         return file;
     }
-    public static int countDirectories(String directoryPath) {
-        File directory = new File(directoryPath);
-        if (!directory.isDirectory()) {
-            return 0;
-        }
-        return countDirectoriesRecursively(directory);
-    }
 
-        private static int countDirectoriesRecursively(File directory) {
-        int count = 0;
-        if (directory.getPath().split("/").length > 6) {
-            count = 1;
-        }
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    count += countDirectoriesRecursively(file);
-                }
-            }
-        }
-        return count;
-    }
-    private void addPath(DynamicObject obj, List<String> path) {
-        for (int i = 0; i < path.size() - 2; i++) {
-            String current = path.get(i);
-            obj.computeIfAbsent(current, k -> new DynamicObject());
-            Object value = obj.get(current);
-            if (value instanceof DynamicObject) {
-                obj = (DynamicObject) value;
+    private void addPath(String[] paths) {
+        Directory current = root;
+
+        for (int i = 0; i < paths.length; i++) {
+            String part = paths[i];
+
+            if (i == paths.length - 1) {
+                current.addInternal(part);
             } else {
-                DynamicObject newObj = new DynamicObject();
-                obj.put(current, newObj);
-                obj = newObj;
-            }
-        }
-        String fileName = path.get(path.size() - 1);
-        String dirName = path.get(path.size() - 2);
-
-        if (obj.get(dirName) == null) {
-            obj.put(dirName, new ArrayList<String>());
-        }
-        if (obj.get(dirName) instanceof List) {
-            List<String> files = (List<String>) obj.get(dirName);
-            if (!files.contains(fileName)) {
-                files.add(fileName);
+                if (current.getSubdirectory(part) == null) {
+                    current.addSubdirectory(part, new Directory(part));
+                }
+                current = current.getSubdirectory(part);
             }
         }
     }
-    public DynamicObjectInterface DirGet(String basePattern,int start) throws IOException {
+    public DynamicObjectInterface DirGet(String basePattern, int start) throws IOException {
         if(start != 0)
             start = 100 * start;
         DynamicObjectInterface dynamicFileCount = new DynamicObjectInterface();
-        CountFindFileInterface pathAll = this.listDirectories(basePattern,start);
-        DynamicObject root = new DynamicObject();
+        CountFindFileInterface pathAll = this.listDirectories(basePattern, start);
         for (String pathName : pathAll.getFile()) {
             String[] pathSplit = pathName.split("/");
-            if(pathSplit.length < 2)
-                continue;
-            addPath(root,Arrays.asList(pathSplit));
+            int countf = countDirectories(Constant.BASE_PATH + pathName);
+            if (countf == 1) {
+                addPath(pathSplit);
+            }
         }
         dynamicFileCount.setFile(root);
         dynamicFileCount.setCountFind(pathAll.getCountFind());

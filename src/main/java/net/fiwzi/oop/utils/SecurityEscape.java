@@ -18,9 +18,9 @@ public class SecurityEscape {
     }
     public static String SecurityFile(String filename) {
         String sanitized = StringUtils.cleanPath(filename);
-        if (sanitized.contains("..") || !Constant.FILENAME_PATTERN_FILE.matcher(sanitized).matches()) {
-            throw new SecurityException("Invalid filename");
-        }
+//        if (sanitized.contains("..") || !Constant.FILENAME_PATTERN_FILE.matcher(sanitized).matches()) {
+//            throw new SecurityException("Invalid filename");
+//        }
         return sanitized;
     }
 }

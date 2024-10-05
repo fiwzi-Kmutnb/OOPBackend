@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 @RestController
 public class ImageDelivery {
@@ -50,6 +51,7 @@ public class ImageDelivery {
 
     @GetMapping("/path/list")
     public ResponseEntity<?> getImagePathDelivery(@RequestParam(name = "start", defaultValue = "0") int start) {
+//        return ResponseEntity.ok().body(test);
         return ResponseEntity.ok().body(imageUsecase.getImagePathUsecase(start));
     }
 }
